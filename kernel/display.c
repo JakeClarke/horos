@@ -26,27 +26,35 @@
 int currentRow = 0;
 int currentCol = 0;
 
-void fbWriteCell(unsigned int i, char c, unsigned char fg, unsigned char bg) {
-	char * fbCell = (char *)(FB_START + (i * 2));
-	*fbCell = c;
-	short color = (fg & 0x0F) << 4 | (bg & 0x0F);
-	*(fbCell + 1) = color;
+void fbWriteCell(unsigned int i, struct FbCell data) {
+	struct FbCell * dest = ((struct FbCell *)FB_START) + i;
+	*dest = data;
 }
 
-static unsigned int toFbOffset(k_byte row, k_byte col) {
+static unsigned int toFbOffset(k_byte col, k_byte row) {
 	return col + (row * FB_COL_MAX);
 }
 
 void fbClear() {
-	kmemset((void *)FB_START, '0', 2 * FB_COL_MAX * FB_ROW_MAX);
-
+	struct FbCell data;
+	data.fg = FB_DEFAULT_FG;
+	data.bg = FB_DEFAULT_BG;
+	data.c = '\0';
+	for (int i = 0; i < FB_COL_MAX * FB_ROW_MAX; ++i)
+	{
+		fbWriteCell(i, data);
+	}
+	
 	currentRow = 0;
 	currentCol = 0;
 }
 
 void fbWrite(const char * d, const unsigned int len) {
+	struct FbCell data;
+	data.fg = FB_DEFAULT_FG;
+	data.bg = FB_DEFAULT_BG;
 	for(unsigned int i = 0; i < len; ++i) {
-		if (currentRow >= FB_COL_MAX)
+		while(currentRow >= FB_ROW_MAX)
 		{
 			kmemcpy((void *)FB_START, (void *)FB_START + toFbOffset(0, 1), 2 * FB_COL_MAX * (FB_ROW_MAX - 1));
 			currentRow--;
@@ -54,10 +62,16 @@ void fbWrite(const char * d, const unsigned int len) {
 
 		if (d[i] == '\n')
 		{
+			data.c = '\0';
+			// blank the rest of the line.
+			while(currentCol < FB_COL_MAX) {
+				fbWriteCell(toFbOffset(currentCol++, currentRow), data);
+			}
 			currentCol = 0;
-			currentRow++; 
+			currentRow++;
 		} else {
-			fbWriteCell(toFbOffset(currentRow, currentCol++), d[i], FB_DEFAULT_FG, FB_DEFAULT_BG);
+			data.c = d[i];
+			fbWriteCell(toFbOffset(currentCol++, currentRow), data);
 			if (currentCol >= FB_COL_MAX) {
 				currentCol = 0;
 				currentRow++; 

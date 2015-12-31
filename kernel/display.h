@@ -5,7 +5,13 @@ void fbWrite(const char * d, const unsigned int len);
 
 void fbWriteString(const char *d);
 
-void fbWriteCell(unsigned int i, char c, unsigned char fg, unsigned char bg);
+struct FbCell {
+	unsigned char c;
+	unsigned char fg : 4;
+	unsigned char bg : 4;
+};
+
+void fbWriteCell(unsigned int i, struct FbCell data);
 
 void fbClear();
 
