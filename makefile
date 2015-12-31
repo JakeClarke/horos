@@ -2,7 +2,7 @@ KERNEL_DIR=kernel
 BOOT_DIR=iso/boot
 GRUB_DIR=$(BOOT_DIR)/grub
 
-.PHONY: clean run
+.PHONY: clean run force
 
 os.iso: $(BOOT_DIR)/kernel.elf $(GRUB_DIR)/menu.lst $(GRUB_DIR)/stage2_eltorito
 	genisoimage -R -b boot/grub/stage2_eltorito \
@@ -20,7 +20,7 @@ $(GRUB_DIR)/stage2_eltorito:
 $(BOOT_DIR)/kernel.elf: $(KERNEL_DIR)/kernel.elf
 	cp $(KERNEL_DIR)/kernel.elf iso/boot/
 
-$(KERNEL_DIR)/kernel.elf: $(KERNEL_DIR)/makefile
+$(KERNEL_DIR)/kernel.elf: $(KERNEL_DIR)/makefile force
 	cd $(KERNEL_DIR) && $(MAKE)
 
 
@@ -30,3 +30,5 @@ run: os.iso
 clean:
 	rm $(GRUB_DIR)/stage2_eltorito iso/boot/kernel.elf os.iso
 	cd kernel && $(MAKE) clean
+
+force:
