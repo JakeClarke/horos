@@ -2,6 +2,8 @@
 #define _H_KERNEL_IO
 
 
-void outb(short f, char s);
+void outb(const short port, const char data);
+
+unsigned char inb(const short port);
 
 #endif

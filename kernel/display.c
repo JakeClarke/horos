@@ -44,9 +44,6 @@ void fbClear() {
 	currentCol = 0;
 }
 
-
-
-
 void fbWrite(const char * d, const unsigned int len) {
 	for(unsigned int i = 0; i < len; ++i) {
 		if (currentRow >= FB_COL_MAX)
@@ -76,4 +73,12 @@ void fbWriteString(const char *d) {
 		++len;
 	}
 	fbWrite(d, len);
+}
+
+void fbMvCursor(const unsigned char x, const unsigned char y) {
+	unsigned int offset = toFbOffset(x, y);
+	outb(FB_COMMAND_PORT, FB_HIGH_BYTE_COMMAND);
+	outb(FB_DATA_PORT, (offset & 0xff00) >> 8);
+	outb(FB_COMMAND_PORT, FB_LOW_BYTE_COMMAND);
+	outb(FB_DATA_PORT, offset & 0xff);
 }

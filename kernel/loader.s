@@ -1,5 +1,4 @@
 global loader                   ; the entry symbol for ELF
-global outb
 
 extern kmain
 
@@ -27,8 +26,3 @@ loader:                         ; the loader label (defined as entry point in li
     call kmain
 .loop:
     jmp .loop                   ; loop forever
-outb:
-    mov al, [esp + 8]
-    mov dx, [esp + 4]
-    out dx, al,
-    ret

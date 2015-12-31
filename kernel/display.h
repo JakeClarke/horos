@@ -9,4 +9,6 @@ void fbWriteCell(unsigned int i, char c, unsigned char fg, unsigned char bg);
 
 void fbClear();
 
+void fbMvCursor(const unsigned char x, const unsigned char y);
+
 #endif
