@@ -3,3 +3,4 @@ stage2_eltorito
 *.o
 *.elf
 *.log
+*.a
