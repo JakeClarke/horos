@@ -1,9 +1,9 @@
-OBJECTS = loader.o io.o display.o main.o
+OBJECTS = loader.o io.o display.o main.o panic.o
 CC=gcc
 AS=nasm
 ASFLAGS=-f elf32
 CFLAGS=-m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector \
-	-nostartfiles -nodefaultlibs -Wall -Wextra -Werror -c -g -o0 -std=c99
+	-nostartfiles -nodefaultlibs -Wall -Wextra -Werror -c -g -og -std=c99
 
 .PHONY: clean 
 
