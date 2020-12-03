@@ -24,7 +24,7 @@ $(KERNEL_DIR)/kernel.elf: $(KERNEL_DIR)/makefile force
 	cd $(KERNEL_DIR) && $(MAKE)
 
 
-run: os.iso
+run: os.iso bochsrc.txt
 	bochs -f bochsrc.txt -q
 
 clean:

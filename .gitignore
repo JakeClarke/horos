@@ -4,3 +4,4 @@ stage2_eltorito
 *.elf
 *.log
 *.a
+*.sym
