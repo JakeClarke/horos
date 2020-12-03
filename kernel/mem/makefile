@@ -5,7 +5,7 @@ ASFLAGS=-f elf32
 CFLAGS=-m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector \
 	-nostartfiles -nodefaultlibs -Wall -Wextra -Werror -c -g -o0 -std=c99
 
-OBJ=seg.o seg-asm.o
+OBJ=seg.o seg-asm.o phys_serv.o
 
 AS=nasm
 
