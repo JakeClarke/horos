@@ -15,7 +15,10 @@ CXXFLAGS=-m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector \
 kernel.elf: link.ld $(OBJECTS)
 	$(LD) $(OBJECTS) -T link.ld -melf_i386 -o kernel.elf
 
-all: kernel.elf
+kernel.elf.sym: kernel.elf
+	./make_symfile.sh kernel.elf
+
+all: kernel.elf kernel.elf.sym
 
 %.o: %.c
 	$(CC) $(CFLAGS)  $< -o $@
