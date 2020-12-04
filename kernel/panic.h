@@ -10,7 +10,7 @@ namespace horos {
 #define str(x) str2(x)
 #define str2(x) #x
 
-#define BUGON(...) if(!(__VA_ARGS__)) { \
+#define ASSERT(...) if(!(__VA_ARGS__)) { \
  BREAK_PT; \
  horos::panic("BUGON: " __FILE__ ":" str(__LINE__) ": " str(__VA_ARGS__));\
 }\

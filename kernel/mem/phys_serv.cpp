@@ -16,9 +16,17 @@ namespace {
     char s_ledger [((1*1024*1024*1024) / horos::mem::PageSize) / 8];
 
     bool pageInUse(Offset off) {
+        Offset pageIdx = horos::mem::PageSize;
+        Offset bitOffset = pageIdx % 8;
+        Offset byteOffset = (pageIdx - bitOffset) / 8;
 
+        char ledgerByte = s_ledger[byteOffset];
 
-        return false;
+        return (ledgerByte & (1 << bitOffset)) != 0;
+    }
+
+    Offset pageAlign(Offset off) {
+        return off - (off % horos::mem::PageSize);
     }
 
     void markPage(Offset page, bool inUse) {
@@ -31,7 +39,7 @@ namespace {
         {
             ledgerByte |= 1 << bitOffset;
         } else {
-            ledgerByte &= 0xff ^ (1 << bitOffset);
+            ledgerByte &= ~(1 << bitOffset);
         }
         s_ledger[byteOffset] = ledgerByte;
     }
@@ -49,47 +57,31 @@ namespace {
 }
 
 void horos::mem::init(Offset value) {
-    s_physMem = value;
+    s_physMem = -1;
     kmemset(s_ledger, 0, sizeof(s_ledger));
 
-    Offset allocated;
-    if (!allocatePhysical(kernel_virtual_start, goodSize(kernel_virtual_size), allocated)) 
-    {
-        panic("failed to allocate kernel space");
-    }
-
-    if (allocated != kernel_virtual_start)
-    {
-        panic("allocated did not match kernel start");
-    }
+    Offset allocated = 0;
+    Offset kernelMemStart = pageAlign(kernel_virtual_start);
+    Offset KerenlRange = goodSize((kernel_virtual_start - kernelMemStart) + kernel_virtual_size);
+    bool success = allocatePhysical(kernelMemStart, KerenlRange, allocated);
+    ASSERT(success && "failed to reserve kernel space");
+    ASSERT(allocated == kernelMemStart && "allocated did not match kernel start");
 }
 
 bool horos::mem::allocatePhysical(Offset start, Offset size, Offset& out) {
-    if(goodSize(size) != size) {
-        panic("size must be in page size");
-    }
-
-    if(start != 0 && goodSize(start) != start) {
-        panic("start must be aligned to the page size");
-    }
-
-
-    const auto requiredPages = size / PageSize;
+    ASSERT(goodSize(size) == size && "size must be in page size");
+    ASSERT(pageAlign(start) == start && "start must be aligned to the page size");
 
     for (Offset current = start; current < s_physMem; current += PageSize)
     {
-        if(pageInUse(current)) {
-            continue;
-        }
-
         Offset start = current;
 
-        while(current - start != 0 && !pageInUse(current)){
+        while(current - start != size && !pageInUse(current)){
             current += PageSize;
         }
 
-        // found a good page
-        if (current - start == 0)
+        // found a good page range
+        if (current - start == size)
         {
             // mark range as used
             markPage(start, size, true);
