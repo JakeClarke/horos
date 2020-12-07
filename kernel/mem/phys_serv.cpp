@@ -61,8 +61,8 @@ void horos::mem::init(Offset value) {
     kmemset(s_ledger, 0, sizeof(s_ledger));
 
     Offset allocated = 0;
-    Offset kernelMemStart = pageAlign(kernel_virtual_start);
-    Offset KerenlRange = goodSize((kernel_virtual_start - kernelMemStart) + kernel_virtual_size);
+    Offset kernelMemStart = pageAlign(kernel_physical_start);
+    Offset KerenlRange = goodSize((kernel_physical_start - kernelMemStart) + kernel_physical_size);
     bool success = allocatePhysical(kernelMemStart, KerenlRange, allocated);
     ASSERT(success && "failed to reserve kernel space");
     ASSERT(allocated == kernelMemStart && "allocated did not match kernel start");

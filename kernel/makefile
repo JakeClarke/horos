@@ -1,7 +1,7 @@
 OBJECTS = loader.o io.o display.o main.o panic.o mem/mem.a
 CC=gcc
 AS=nasm
-ASFLAGS=-f elf32
+ASFLAGS=-f elf32 -g
 CFLAGS=-m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector \
 	-nostartfiles -nodefaultlibs -Wall -Wextra -Werror -c -g -og -std=c99
 
