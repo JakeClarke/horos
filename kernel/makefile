@@ -1,4 +1,4 @@
-OBJECTS = loader.o io.o display.o main.o panic.o mem/mem.a
+OBJECTS = loader.o io.o display.o main.o panic.o mem/mem.a log/fmt.o
 CC=gcc
 AS=nasm
 ASFLAGS=-f elf32 -g
